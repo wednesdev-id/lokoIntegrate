@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import LandingNavbar from '@/components/layout/LandingNavbar';
-import api from '@/services/api';
+
 import { 
   Zap, Shield, MessageCircle, Bot, BarChart3, 
   Smartphone, CheckCircle2, ArrowRight
@@ -17,53 +17,41 @@ const LandingPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const response = await api.get('/public/subscription-packages/');
-        if (response.data && response.data.success) {
-          setPackages(response.data.data);
+    // Gunakan data dummy agar langsung tampil tanpa menunggu API (backend belum di-deploy)
+    setPackages([
+        {
+            id: '1',
+            name: 'Starter',
+            description: 'Untuk bisnis kecil yang baru memulai otomatisasi.',
+            price: 0,
+            broadcast_limit: 10,
+            ai_limit: 50,
+            max_sessions: 1,
+            duration_days: 7,
+            is_trial_enabled: true
+        },
+        {
+            id: '2',
+            name: 'Pro Business',
+            description: 'Solusi lengkap untuk skala bisnis menengah.',
+            price: 150000,
+            broadcast_limit: 1000,
+            ai_limit: 5000,
+            max_sessions: 3,
+            duration_days: 30,
+        },
+        {
+            id: '3',
+            name: 'Enterprise',
+            description: 'Performa maksimal untuk kebutuhan korporasi besar.',
+            price: 500000,
+            broadcast_limit: 10000,
+            ai_limit: 25000,
+            max_sessions: 10,
+            duration_days: 30,
         }
-      } catch (error) {
-        console.error('Failed to fetch packages:', error);
-        // Fallback static data for development
-        setPackages([
-            {
-                id: '1',
-                name: 'Starter',
-                description: 'Untuk bisnis kecil yang baru memulai otomatisasi.',
-                price: 0,
-                broadcast_limit: 10,
-                ai_limit: 50,
-                max_sessions: 1,
-                duration_days: 7,
-                is_trial_enabled: true
-            },
-            {
-                id: '2',
-                name: 'Pro Business',
-                description: 'Solusi lengkap untuk skala bisnis menengah.',
-                price: 150000,
-                broadcast_limit: 1000,
-                ai_limit: 5000,
-                max_sessions: 3,
-                duration_days: 30,
-            },
-            {
-                id: '3',
-                name: 'Enterprise',
-                description: 'Performa maksimal untuk kebutuhan korporasi besar.',
-                price: 500000,
-                broadcast_limit: 10000,
-                ai_limit: 25000,
-                max_sessions: 10,
-                duration_days: 30,
-            }
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPackages();
+    ]);
+    setLoading(false);
 
     // Auto-redirect to dashboard if already logged in
     const token = localStorage.getItem('auth_token');
