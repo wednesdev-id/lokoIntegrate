@@ -15,6 +15,7 @@ export interface User {
     business_sector?: string;
     broadcast_quota?: number;
     ai_quota?: number;
+    created_at?: string;
 }
 
 interface UserContextType {

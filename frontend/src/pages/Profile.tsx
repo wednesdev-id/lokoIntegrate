@@ -12,7 +12,7 @@ import userService from '@/services/user.service';
 import authService from '@/services/auth.service';
 import { 
   Mail, UserCircle, LogOut, MapPin, Briefcase, 
-  Settings, Shield, CreditCard, LayoutDashboard, 
+  Shield, LayoutDashboard, 
   CheckCircle2, Clock, Zap, Star
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +21,7 @@ import { useToast } from '@/components/common/ToastProvider';
 const Profile: React.FC = () => {
   const { user, refreshUser, loading } = useUser();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { addToast } = useToast();
   
   // State for Edit Profile
   const [profileForm, setProfileForm] = useState({
@@ -63,17 +63,10 @@ const Profile: React.FC = () => {
     setUpdating(true);
     try {
       await userService.updateProfile(profileForm);
-      toast({
-        title: "Profil Diperbarui",
-        description: "Informasi profil Anda berhasil disimpan."
-      });
+      addToast("Profil Diperbarui", "Informasi profil Anda berhasil disimpan.", "success");
       await refreshUser();
     } catch (error: any) {
-      toast({
-        title: "Gagal Memperbarui",
-        description: error.message || "Terjadi kesalahan saat menyimpan profil.",
-        variant: "destructive"
-      });
+      addToast("Gagal Memperbarui", error.message || "Terjadi kesalahan saat menyimpan profil.", "error");
     } finally {
       setUpdating(false);
     }
@@ -82,11 +75,7 @@ const Profile: React.FC = () => {
   const onUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordForm.new_password !== passwordForm.confirm_password) {
-      toast({
-        title: "Konfirmasi Password Salah",
-        description: "Password baru dan konfirmasi tidak cocok.",
-        variant: "destructive"
-      });
+      addToast("Konfirmasi Password Salah", "Password baru dan konfirmasi tidak cocok.", "error");
       return;
     }
     
@@ -96,21 +85,14 @@ const Profile: React.FC = () => {
         current_password: passwordForm.current_password,
         new_password: passwordForm.new_password
       });
-      toast({
-        title: "Password Diperbarui",
-        description: "Keamanan akun Anda telah diperbarui."
-      });
+      addToast("Password Diperbarui", "Keamanan akun Anda telah diperbarui.", "success");
       setPasswordForm({
         current_password: '',
         new_password: '',
         confirm_password: ''
       });
     } catch (error: any) {
-      toast({
-        title: "Gagal Ganti Password",
-        description: error.message || "Terjadi kesalahan saat mengganti password.",
-        variant: "destructive"
-      });
+      addToast("Gagal Ganti Password", error.message || "Terjadi kesalahan saat mengganti password.", "error");
     } finally {
       setUpdating(false);
     }
