@@ -1,0 +1,152 @@
+networks:
+  loko-network:
+    driver: bridge
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: loko-postgres
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-loko_db}
+      POSTGRES_USER: ${DB_USER:-loko_user}
+      POSTGRES_PASSWORD: ${DB_PASS:-loko_password}
+    # No host port binding - accessible internally only
+    expose:
+      - "5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - loko-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-loko_user} -d ${DB_NAME:-loko_db}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache for Media
+  redis:
+    image: redis:7-alpine
+    container_name: loko-redis
+    restart: unless-stopped
+    # No host port binding - accessible internally only
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --maxmemory ${REDIS_MAX_MEMORY:-512mb} --maxmemory-policy allkeys-lru --save 60 1000 --appendonly yes
+    networks:
+      - loko-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: loko-minio
+    restart: unless-stopped
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - loko-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Loko Backend (Production)
+  loko-backend:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile
+    container_name: loko-backend
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    # Backend only accessible via Nginx on port 8088
+    expose:
+      - "${SERVER_PORT:-1234}"
+    environment:
+      # Server Configuration
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - SERVER_NAME=${SERVER_NAME:-loko-backend}
+      - SERVER_PORT=${SERVER_PORT:-1234}
+
+      # Security
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_EXPIRED_DAY=${JWT_EXPIRED_DAY:-7}
+      - STAY_ALIVE_MINUTE=${STAY_ALIVE_MINUTE:-30}
+
+      # Database - PostgreSQL
+      - DB_TYPE=${DB_TYPE:-postgres}
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-loko_user}
+      - DB_PASS=${DB_PASS:-loko_password}
+      - DB_NAME=${DB_NAME:-loko_db}
+      - DB_MIGRATION=${DB_MIGRATION:-true}
+
+      # Redis Cache
+      - REDIS_ENABLED=${REDIS_ENABLED:-true}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${REDIS_DB:-0}
+
+      # S3 / Minio configuration
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=${MINIO_ROOT_USER:-minioadmin}
+      - S3_SECRET_KEY=${MINIO_ROOT_PASSWORD:-minioadmin}
+      - S3_REGION=us-east-1
+      - S3_USE_SSL=false
+      - S3_BUCKET=whatsap
+      - SAVE_MEDIA_LOCAL=false
+
+    networks:
+      - loko-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: loko-nginx
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - loko-network
+    depends_on:
+      - loko-backend
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local

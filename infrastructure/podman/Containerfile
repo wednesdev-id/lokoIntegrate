@@ -1,0 +1,67 @@
+# --- 🛠️ Multi-stage build with Bun and Go --- #
+FROM oven/bun:1.2-alpine as frontend-builder
+LABEL org.opencontainers.image.authors="jefriherditriyanto@gmail.com"
+
+# Build Frontend with Bun
+WORKDIR /frontend
+COPY frontend/package.json frontend/bun.lock* ./
+RUN bun install --frozen-lockfile
+
+COPY frontend/ ./
+RUN bun run build
+
+# --- 🛠️ golang as backend builder --- #
+FROM golang:1.23-alpine as backend-builder
+
+#-> Setup Environment
+ENV GO111MODULE on
+ENV CGO_ENABLED 0
+ENV GOOS linux
+ENV GOARCH amd64
+
+#-> 🌊 Install Require
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    tzdata
+
+WORKDIR /build
+COPY . .
+
+# Copy built frontend from previous stage
+COPY --from=frontend-builder /frontend/dist ./server/static/dist/
+
+#-> 🌊 Install Golang Module
+RUN go mod tidy
+
+# 💯 Configuration
+RUN sed -i 's#127.0.0.1:#:#g' /build/server/http/server.http.go
+RUN for file in /build/server/env/*; do \
+    sed -i 's#localhost#host.docker.internal#g' "$file"; \
+    done
+
+#-> ⚒️ Build App with embedded frontend
+RUN go build -o ./run
+
+# =============================================================================== #
+
+# --- 🚀 Finishing --- #
+FROM alpine:latest as runner
+WORKDIR /app
+
+# Add the community repository to get ffmpeg
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
+# Install ffmpeg along with the other tools
+RUN apk add --no-cache openssl curl nano ffmpeg
+
+COPY --from=backend-builder /build/run     /app/run
+
+# 💯 Last Configuration
+# COPY --from=builder /build/.env    /app/.env
+# RUN sed -i 's#localhost#host.docker.internal#g' .env
+
+RUN chmod +x ./run
+
+ENTRYPOINT ["/app/run"]
+CMD ["run"]

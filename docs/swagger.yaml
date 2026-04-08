@@ -1,0 +1,1562 @@
+basePath: /api/v1
+definitions:
+  dto.AddParticipantsRequest:
+    properties:
+      group_jid:
+        type: string
+      participants:
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - group_jid
+    - participants
+    type: object
+  dto.CreateGroupRequest:
+    description: Request payload for creating a WhatsApp group
+    properties:
+      description:
+        example: A group for team discussions
+        type: string
+      name:
+        example: My WhatsApp Group
+        type: string
+      participants:
+        description: Array of participant JIDs
+        example:
+        - 6281234567890@s.whatsapp.net
+        - 6281987654321@s.whatsapp.net
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - name
+    - participants
+    type: object
+  dto.CreateGroupResponse:
+    properties:
+      created_at:
+        type: string
+      group_jid:
+        type: string
+      invite_code:
+        type: string
+      invite_url:
+        type: string
+      subject:
+        type: string
+    type: object
+  dto.CreateSessionRequest:
+    properties:
+      session_name:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - session_name
+    type: object
+  dto.DeviceStatusResponse:
+    properties:
+      is_connected:
+        type: boolean
+      is_logged_in:
+        type: boolean
+      jid:
+        type: string
+      last_seen:
+        type: string
+      phone_number:
+        type: string
+      push_name:
+        type: string
+      qr_code:
+        type: string
+    type: object
+  dto.GroupInfoResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      invite_code:
+        type: string
+      is_announcement:
+        type: boolean
+      is_locked:
+        type: boolean
+      jid:
+        type: string
+      name:
+        type: string
+      owner_jid:
+        type: string
+      participant_count:
+        type: integer
+      participants:
+        items:
+          $ref: '#/definitions/dto.GroupParticipantResponse'
+        type: array
+      profile_pic:
+        type: string
+      subject:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.GroupParticipantResponse:
+    properties:
+      jid:
+        type: string
+      joined_at:
+        type: string
+      role:
+        type: string
+    type: object
+  dto.JoinGroupRequest:
+    properties:
+      invite_code:
+        type: string
+    required:
+    - invite_code
+    type: object
+  dto.ListSessionsResponse:
+    properties:
+      sessions:
+        items:
+          $ref: '#/definitions/dto.SessionResponse'
+        type: array
+      total:
+        type: integer
+    type: object
+  dto.MarkReadRequest:
+    properties:
+      chat_jid:
+        type: string
+      message_ids:
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - chat_jid
+    - message_ids
+    type: object
+  dto.MessageResponse:
+    description: WhatsApp message details in API response
+    properties:
+      caption:
+        example: Check this out
+        type: string
+      chat_jid:
+        example: 6281234567890@s.whatsapp.net
+        type: string
+      content:
+        example: Hello World
+        type: string
+      created_at:
+        type: string
+      file_name:
+        example: photo.jpg
+        type: string
+      file_size:
+        example: 1024000
+        type: integer
+      id:
+        example: "123"
+        type: string
+      is_from_me:
+        example: true
+        type: boolean
+      is_group:
+        example: false
+        type: boolean
+      is_read:
+        example: false
+        type: boolean
+      jid:
+        example: 6281234567890@s.whatsapp.net
+        type: string
+      media_type:
+        example: image/jpeg
+        type: string
+      media_url:
+        example: https://example.com/image.jpg
+        type: string
+      message_id:
+        example: 3EB0ABCD1234567890
+        type: string
+      message_type:
+        enum:
+        - text
+        - image
+        - video
+        - audio
+        - document
+        example: text
+        type: string
+      quoted_message_content:
+        example: Original message text
+        type: string
+      quoted_message_id:
+        description: Quoted Message Fields
+        example: 3EB0ABCD9876543210
+        type: string
+      quoted_message_sender:
+        example: 6281234567890@s.whatsapp.net
+        type: string
+      status:
+        enum:
+        - pending
+        - sent
+        - delivered
+        - read
+        - failed
+        example: sent
+        type: string
+      timestamp:
+        type: string
+    type: object
+  dto.RemoveParticipantsRequest:
+    properties:
+      group_jid:
+        type: string
+      participants:
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - group_jid
+    - participants
+    type: object
+  dto.SendMessageBySessionRequest:
+    properties:
+      message:
+        description: Message content
+        type: string
+      phone_number:
+        description: Recipient phone number or JID
+        type: string
+    required:
+    - message
+    - phone_number
+    type: object
+  dto.SendMessageRequest:
+    description: Request payload for sending WhatsApp messages
+    properties:
+      caption:
+        description: Caption for media messages)
+        example: Check this out
+        type: string
+      file_name:
+        description: File name (for document messages)
+        example: document.pdf
+        type: string
+      jid:
+        description: Target chat JID (also accept "jid" from frontend)
+        example: 6281234567890@s.whatsapp.net
+        type: string
+      media_url:
+        description: Media URL (for media messages)
+        example: https://example.com/image.jpg
+        type: string
+      message:
+        description: Text content (also accept "message" from frontend)
+        example: Hello World
+        type: string
+      message_type:
+        description: Message type
+        enum:
+        - text
+        - image
+        - video
+        - audio
+        - document
+        example: text
+        type: string
+      quoted_message_id:
+        description: Quoted message ID for replies
+        example: 3EB0ABCD1234567890
+        type: string
+      session_id:
+        description: Session ID
+        example: 019b6954-9536-7d55-a444-45acf931f60f
+        type: string
+    required:
+    - jid
+    - message_type
+    - session_id
+    type: object
+  dto.SendStatusRequest:
+    properties:
+      caption:
+        description: Caption for media
+        type: string
+      content:
+        description: Text content
+        type: string
+      media_url:
+        description: Media URL
+        type: string
+      type:
+        description: text, image, video
+        type: string
+    required:
+    - type
+    type: object
+  dto.SendTypingRequest:
+    properties:
+      chat_jid:
+        type: string
+      is_typing:
+        type: boolean
+    required:
+    - chat_jid
+    type: object
+  dto.SessionResponse:
+    properties:
+      ai_auto_reply:
+        type: boolean
+      ai_prompt:
+        type: string
+      created_at:
+        type: string
+      last_connected:
+        type: string
+      phone_number:
+        type: string
+      qr_code:
+        type: string
+      qr_code_string:
+        type: string
+      session_id:
+        type: string
+      session_name:
+        type: string
+      status:
+        description: connecting, connected, disconnected
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.StatusResponse:
+    properties:
+      caption:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      jid:
+        type: string
+      media_url:
+        type: string
+      status_id:
+        type: string
+      timestamp:
+        type: string
+      type:
+        type: string
+    type: object
+  dto.UpdateGroupRequest:
+    properties:
+      description:
+        type: string
+      group_jid:
+        type: string
+      name:
+        type: string
+    required:
+    - group_jid
+    type: object
+  dto.WebhookConfigRequest:
+    properties:
+      enabled:
+        type: boolean
+      headers:
+        additionalProperties:
+          type: string
+        type: object
+      max_retries:
+        maximum: 10
+        minimum: 0
+        type: integer
+      retry_delay_seconds:
+        maximum: 300
+        minimum: 1
+        type: integer
+      secret:
+        type: string
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  response.CreateGroupSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/dto.CreateGroupResponse'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  response.ErrorResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  response.GetGroupsSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.GroupInfoResponse'
+        type: array
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/response.Pagination'
+      success:
+        type: boolean
+    type: object
+  response.GetStatusSuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/dto.StatusResponse'
+        type: array
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/response.Pagination'
+      success:
+        type: boolean
+    type: object
+  response.Pagination:
+    properties:
+      current_page:
+        type: integer
+      has_next:
+        type: boolean
+      has_prev:
+        type: boolean
+      per_page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  response.WhatsAppBaseResponse:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  response.WhatsAppPaginatedResponse:
+    properties:
+      data: {}
+      error:
+        type: string
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/response.Pagination'
+      success:
+        type: boolean
+    type: object
+  session.UpdateAIConfigReq:
+    properties:
+      ai_auto_reply:
+        type: boolean
+      ai_prompt:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API server untuk mengelola WhatsApp messaging, status, dan webhook
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: WhatsApp API Server
+  version: "1.0"
+paths:
+  /whatsapp/chats:
+    get:
+      consumes:
+      - application/json
+      description: Get list of chats with recent activity
+      parameters:
+      - description: Session ID
+        in: query
+        name: session_id
+        type: string
+      - default: 50
+        description: Limit results
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - default: 720
+        description: Hours back for activity
+        in: query
+        maximum: 8760
+        name: hours
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp chats
+      tags:
+      - WhatsApp Chats
+  /whatsapp/contacts:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all WhatsApp contacts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp contacts
+      tags:
+      - WhatsApp Contacts
+  /whatsapp/device/disconnect:
+    post:
+      consumes:
+      - application/json
+      description: Disconnect the WhatsApp client
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Disconnect WhatsApp device
+      tags:
+      - WhatsApp Device
+  /whatsapp/device/qr-image:
+    get:
+      consumes:
+      - application/json
+      description: Get the QR code as PNG image for WhatsApp authentication (can be
+        directly used in <img> tags)
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: QR Code PNG image
+          schema:
+            type: file
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp QR code as PNG image
+      tags:
+      - WhatsApp Device
+  /whatsapp/device/status:
+    get:
+      consumes:
+      - application/json
+      description: Get the current connection and login status of WhatsApp device
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DeviceStatusResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp device status
+      tags:
+      - WhatsApp
+  /whatsapp/devices:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all connected WhatsApp devices
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppPaginatedResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get list of WhatsApp devices
+      tags:
+      - WhatsApp Device
+  /whatsapp/groups:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all joined WhatsApp groups
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetGroupsSuccessResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp groups
+      tags:
+      - WhatsApp Groups
+    post:
+      consumes:
+      - application/json
+      description: Create a new WhatsApp group with specified participants
+      parameters:
+      - description: Group data
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.CreateGroupSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create WhatsApp group
+      tags:
+      - WhatsApp Groups
+    put:
+      consumes:
+      - application/json
+      description: Update WhatsApp group name or description
+      parameters:
+      - description: Update data
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupInfoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update group
+      tags:
+      - WhatsApp Groups
+  /whatsapp/groups/{jid}:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed information about a specific WhatsApp group
+      parameters:
+      - description: Group JID
+        in: path
+        name: jid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupInfoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get group information
+      tags:
+      - WhatsApp Groups
+  /whatsapp/groups/{jid}/leave:
+    post:
+      consumes:
+      - application/json
+      description: Leave a WhatsApp group
+      parameters:
+      - description: Group JID
+        in: path
+        name: jid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Leave group
+      tags:
+      - WhatsApp Groups
+  /whatsapp/groups/join:
+    post:
+      consumes:
+      - application/json
+      description: Join a WhatsApp group using an invite code/link
+      parameters:
+      - description: Invite code
+        in: body
+        name: invite
+        required: true
+        schema:
+          $ref: '#/definitions/dto.JoinGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.GroupInfoResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Join group via invite
+      tags:
+      - WhatsApp Groups
+  /whatsapp/groups/participants/add:
+    post:
+      consumes:
+      - application/json
+      description: Add new participants to a WhatsApp group
+      parameters:
+      - description: Add participants request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.AddParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Add group participants
+      tags:
+      - WhatsApp Groups
+  /whatsapp/groups/participants/remove:
+    post:
+      consumes:
+      - application/json
+      description: Remove participants from a WhatsApp group
+      parameters:
+      - description: Remove participants request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RemoveParticipantsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Remove group participants
+      tags:
+      - WhatsApp Groups
+  /whatsapp/qr:
+    get:
+      consumes:
+      - application/json
+      description: Get the QR code for WhatsApp authentication
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp QR code
+      tags:
+      - WhatsApp
+  /whatsapp/send:
+    post:
+      consumes:
+      - application/json
+      description: Send text, image, document, or other media messages via WhatsApp
+      parameters:
+      - description: Message data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Send WhatsApp message
+      tags:
+      - WhatsApp
+  /whatsapp/status:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve sent status messages with pagination support
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.GetStatusSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp status messages
+      tags:
+      - WhatsApp Status
+  /whatsapp/status/send:
+    post:
+      consumes:
+      - application/json
+      description: Send text, image, or video status message to WhatsApp
+      parameters:
+      - description: Status data
+        in: body
+        name: status
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Send WhatsApp status
+      tags:
+      - WhatsApp Status
+  /whatsapp/v1/media/download:
+    get:
+      consumes:
+      - application/json
+      description: Download and proxy WhatsApp media files (images, videos, audio,
+        documents) with Persistent Local Storage
+      parameters:
+      - description: Session ID
+        in: query
+        name: session_id
+        required: true
+        type: string
+      - description: WhatsApp media URL
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: Media type (image/video/audio/document)
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Download WhatsApp media
+      tags:
+      - WhatsApp Messages
+  /whatsapp/v1/messages:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve WhatsApp messages with filtering and pagination support
+      parameters:
+      - description: Filter by session ID
+        in: query
+        name: session_id
+        type: string
+      - description: Filter by chat JID
+        example: '"6281234567890@s.whatsapp.net"'
+        in: query
+        name: chat_jid
+        type: string
+      - default: 50
+        description: Limit results (max 100)
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by sender (true=sent, false=received)
+        in: query
+        name: is_from_me
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Messages retrieved successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppPaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.MessageResponse'
+                  type: array
+              type: object
+        "500":
+          description: Failed to retrieve messages
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get WhatsApp messages
+      tags:
+      - WhatsApp Messages
+  /whatsapp/v1/messages/mark-read:
+    post:
+      consumes:
+      - application/json
+      description: Send read receipts for specified messages
+      parameters:
+      - description: Mark read request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.MarkReadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Mark messages as read
+      tags:
+      - WhatsApp Messages
+  /whatsapp/v1/messages/stream:
+    get:
+      consumes:
+      - application/json
+      description: Get real-time message updates via SSE for a specific session
+      parameters:
+      - description: Session ID
+        in: query
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: SSE stream
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Stream real-time messages
+      tags:
+      - WhatsApp Messages
+  /whatsapp/v1/messages/typing:
+    post:
+      consumes:
+      - application/json
+      description: Send typing or stopped-typing indicator to a chat
+      parameters:
+      - description: Typing request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendTypingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Send typing indicator
+      tags:
+      - WhatsApp Messages
+  /whatsapp/v1/sessions:
+    get:
+      consumes:
+      - application/json
+      description: Get all WhatsApp sessions for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.ListSessionsResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: List WhatsApp sessions
+      tags:
+      - WhatsApp Session
+    post:
+      consumes:
+      - application/json
+      description: Create a new WhatsApp session for multi-device support
+      parameters:
+      - description: Session creation request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSessionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create new WhatsApp session
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a WhatsApp session and cleanup resources
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete session
+      tags:
+      - WhatsApp Session
+    get:
+      consumes:
+      - application/json
+      description: Retrieve details of a specific WhatsApp session
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.SessionResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get session details
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/ai-config:
+    put:
+      consumes:
+      - application/json
+      description: Enable/Disable AI auto reply and set custom prompt
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      - description: AI Config request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/session.UpdateAIConfigReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update AI config
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/chats:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all chats for a specific WhatsApp session
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get session chats
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/connect:
+    post:
+      consumes:
+      - application/json
+      description: Start WhatsApp connection process for a session (generates QR code)
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Connect session
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/contacts:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all contacts for a specific WhatsApp session
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get session contacts
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/disconnect:
+    post:
+      consumes:
+      - application/json
+      description: Disconnect an active WhatsApp session
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Disconnect session
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/messages/send:
+    post:
+      consumes:
+      - application/json
+      description: Send a WhatsApp message using a specific session
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      - description: Message data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SendMessageBySessionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Send message by session
+      tags:
+      - WhatsApp Session
+  /whatsapp/v1/sessions/{session_id}/qr:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve QR code for WhatsApp session authentication
+      parameters:
+      - description: Session ID
+        in: path
+        name: session_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WhatsAppBaseResponse'
+            - properties:
+                data:
+                  additionalProperties:
+                    type: string
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get session QR code
+      tags:
+      - WhatsApp Session
+  /whatsapp/webhook/configure:
+    post:
+      consumes:
+      - application/json
+      description: Configure webhook URL and retry settings for WhatsApp events
+      parameters:
+      - description: Webhook configuration
+        in: body
+        name: webhook
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WebhookConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Configure webhook
+      tags:
+      - WhatsApp Webhook
+  /whatsapp/webhook/retry:
+    post:
+      consumes:
+      - application/json
+      description: Retry all failed webhook deliveries from queue
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+      summary: Retry failed webhooks
+      tags:
+      - WhatsApp Webhook
+  /whatsapp/webhook/status:
+    get:
+      consumes:
+      - application/json
+      description: Get current webhook configuration and status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+      summary: Get webhook status
+      tags:
+      - WhatsApp Webhook
+  /whatsapp/webhook/test:
+    post:
+      consumes:
+      - application/json
+      description: Send a test webhook to verify configuration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.WhatsAppBaseResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Test webhook
+      tags:
+      - WhatsApp Webhook
+schemes:
+- http
+- https
+swagger: "2.0"
