@@ -117,9 +117,7 @@ const LandingPage: React.FC = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <Badge className="mb-6 bg-blue-100 text-blue-700 hover:bg-blue-100 border-none px-4 py-1.5 rounded-full text-sm">
-            🚀 Baru: Integrasi AI dengan OpenRouter
-          </Badge>
+
           <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight leading-tight mb-6">
             Lobi Toko (Loko) <br />
             <span className="bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">

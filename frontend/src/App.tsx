@@ -27,6 +27,8 @@ import MasterDataContact from "./pages/MasterDataContact"
 import Transactions from "./pages/sales/Transactions"
 import SubscriptionTransactions from "./pages/SubscriptionTransactions";
 import Invoices from "./pages/Invoices";
+import About from "./pages/About";
+
 
 
 import { UserProvider } from "./contexts/UserContext"
@@ -53,9 +55,10 @@ function App() {
             <ContactsProvider>
               <Routes>
               {/* Landing Page (Public) */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+               <Route path="/" element={<LandingPage />} />
+               <Route path="/about" element={<About />} />
+               <Route path="/login" element={<Login />} />
+               <Route path="/register" element={<Register />} />
 
               {/* Main App Routes wrapped in Layout */}
               <Route element={<ProtectedRoute />}>

@@ -20,6 +20,7 @@ const LandingNavbar: React.FC = () => {
   const navLinks = [
     { name: 'Fitur', href: '#features' },
     { name: 'Harga', href: '#pricing' },
+    { name: 'Tentang', href: '/about' },
   ];
 
   return (
@@ -50,13 +51,23 @@ const LandingNavbar: React.FC = () => {
         {/* Desktop Links (Centered to align with Headline) */}
         <div className="hidden md:flex items-center gap-8 px-4">
           {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
-            >
-              {link.name}
-            </a>
+            link.href.startsWith('#') ? (
+              <a
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+              >
+                {link.name}
+              </Link>
+            )
           ))}
         </div>
 
@@ -85,15 +96,26 @@ const LandingNavbar: React.FC = () => {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 p-6 space-y-4 animate-in slide-in-from-top-4 duration-200 shadow-xl">
-          {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="block text-lg font-medium text-gray-900"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {link.name}
-            </a>
+           {navLinks.map((link) => (
+            link.href.startsWith('#') ? (
+              <a
+                key={link.name}
+                href={link.href}
+                className="block text-lg font-medium text-gray-900"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </a>
+            ) : (
+              <Link
+                key={link.name}
+                to={link.href}
+                className="block text-lg font-medium text-gray-900"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {link.name}
+              </Link>
+            )
           ))}
           <div className="pt-4 flex flex-col gap-4">
             <Button 
