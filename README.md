@@ -1,4 +1,4 @@
-# Loko (Lobby Toko) - WhatsApp Integration API
+# Loko (Lobi Toko) - WhatsApp Integration API
 
 ![Loko Logo](https://img.shields.io/badge/Loko-WhatsApp%20API-green?style=for-the-badge&logo=whatsapp)
 
