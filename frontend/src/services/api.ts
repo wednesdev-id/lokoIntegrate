@@ -1,7 +1,8 @@
+/// <reference types="vite/client" />
 import axios from 'axios';
 
-// Use relative path to automatically use the same host and port as the frontend
-const API_BASE_URL = '/api';
+// Use relative path to automatically use the same host and port as the frontend, or env var for production
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 // Create axios instance
 export const api = axios.create({

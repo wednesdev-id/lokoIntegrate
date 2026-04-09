@@ -238,6 +238,38 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section id="faq" className="py-24 bg-white">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Pertanyaan yang Sering Diajukan</h2>
+            <p className="text-gray-500">Punya pertanyaan lain? Jangan ragu untuk menghubungi tim support kami.</p>
+          </div>
+          
+          <div className="space-y-4">
+            {[
+              { q: 'Apakah ada batasan nomor WhatsApp yang bisa dihubungkan?', a: 'Tergantung paket yang Anda pilih. Paket Starter hanya mengizinkan 1 nomor WhatsApp, sedangkan paket lain seperti Enterprise mendukung hingga 10 nomor dalam satu dashboard.' },
+              { q: 'Bagaimana cara kerja AI Chatbot?', a: 'Kami mengintegrasikan sistem dengan OpenRouter AI. Anda bisa menentukan instruksi khusus (prompt) untuk bot Anda, dan AI akan otomatis membalas pesan pelanggan sesuai konteks yang diberikan 24/7.' },
+              { q: 'Apakah aman mengirim pesan Broadcast?', a: 'Sistem Loko dirancang dengan delay otomatis (jeda) dan manajemen limit untuk meminimalisir risiko blokir dari WhatsApp. Namun, kami tetap menyarankan untuk mengirim pesan sesuai dengan ketentuan layanan WhatsApp.' },
+              { q: 'Apakah saya bisa membatalkan langganan kapan saja?', a: 'Tentu. Anda dapat upgrade, downgrade, atau membatalkan langganan kapan saja melalui dashboard tanpa biaya penalti tersembunyi.' }
+            ].map((faq, i) => (
+              <details key={i} className="group border border-gray-200 rounded-2xl bg-gray-50/50 p-6 [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer items-center justify-between gap-1.5 font-medium text-gray-900">
+                  <h3 className="text-lg font-semibold">{faq.q}</h3>
+                  <span className="shrink-0 rounded-full bg-white p-1.5 text-gray-900 sm:p-3 shadow-sm border border-gray-100 transition duration-300 group-open:-rotate-180">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                </summary>
+                <p className="mt-4 leading-relaxed text-gray-600">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA Footer Section */}
       <section className="py-24 bg-gray-900 overflow-hidden relative">
