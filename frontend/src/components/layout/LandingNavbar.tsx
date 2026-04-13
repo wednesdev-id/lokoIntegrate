@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 const LandingNavbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,10 +18,22 @@ const LandingNavbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('auth_token');
+      setIsLoggedIn(!!token);
+    };
+    checkAuth();
+    // Listen for storage changes (login/logout)
+    window.addEventListener('storage', checkAuth);
+    return () => window.removeEventListener('storage', checkAuth);
+  }, []);
+
   const navLinks = [
     { name: 'Fitur', href: '#features' },
     { name: 'Harga', href: '#pricing' },
     { name: 'Tentang', href: '/about' },
+    { name: 'Dashboard', href: 'https://loko.wednesdev.id/dashboard', external: true },
   ];
 
   return (
@@ -50,38 +63,58 @@ const LandingNavbar: React.FC = () => {
 
         {/* Desktop Links (Centered to align with Headline) */}
         <div className="hidden md:flex items-center gap-8 px-4">
-          {navLinks.map((link) => (
-            link.href.startsWith('#') ? (
-              <a
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
-              >
-                {link.name}
-              </a>
-            ) : (
-              <Link
-                key={link.name}
-                to={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
-              >
-                {link.name}
-              </Link>
-            )
-          ))}
+          {navLinks.map((link) => {
+            if (link.href.startsWith('#')) {
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+                >
+                  {link.name}
+                </a>
+              );
+            } else if ((link as any).external) {
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap font-semibold"
+                >
+                  {link.name}
+                </a>
+              );
+            } else {
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors whitespace-nowrap"
+                >
+                  {link.name}
+                </Link>
+              );
+            }
+          })}
         </div>
 
         {/* Desktop CTA Part */}
         <div className="hidden md:flex flex-1 items-center justify-end gap-4">
-          <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2">
-            Masuk
-          </Link>
-          <Button 
-            onClick={() => navigate('/register')}
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 rounded-full px-6"
-          >
-            Mulai Sekarang <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
+          {!isLoggedIn && (
+            <>
+              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-blue-600 px-4 py-2">
+                Masuk
+              </Link>
+              <Button
+                onClick={() => navigate('/register')}
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200 rounded-full px-6"
+              >
+                Mulai Sekarang <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -96,48 +129,67 @@ const LandingNavbar: React.FC = () => {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 p-6 space-y-4 animate-in slide-in-from-top-4 duration-200 shadow-xl">
-           {navLinks.map((link) => (
-            link.href.startsWith('#') ? (
-              <a
-                key={link.name}
-                href={link.href}
-                className="block text-lg font-medium text-gray-900"
-                onClick={() => setIsMobileMenuOpen(false)}
+           {navLinks.map((link) => {
+            if (link.href.startsWith('#')) {
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="block text-lg font-medium text-gray-900"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+              );
+            } else if ((link as any).external) {
+              return (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-lg font-medium text-blue-600 font-semibold"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </a>
+              );
+            } else {
+              return (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="block text-lg font-medium text-gray-900"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              );
+            }
+          })}
+          {!isLoggedIn && (
+            <div className="pt-4 flex flex-col gap-4">
+              <Button
+                variant="outline"
+                className="w-full rounded-xl"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigate('/login');
+                }}
               >
-                {link.name}
-              </a>
-            ) : (
-              <Link
-                key={link.name}
-                to={link.href}
-                className="block text-lg font-medium text-gray-900"
-                onClick={() => setIsMobileMenuOpen(false)}
+                Masuk
+              </Button>
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigate('/register');
+                }}
               >
-                {link.name}
-              </Link>
-            )
-          ))}
-          <div className="pt-4 flex flex-col gap-4">
-            <Button 
-              variant="outline" 
-              className="w-full rounded-xl"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                navigate('/login');
-              }}
-            >
-              Masuk
-            </Button>
-            <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                navigate('/register');
-              }}
-            >
-              Daftar Gratis
-            </Button>
-          </div>
+                Daftar Gratis
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </nav>

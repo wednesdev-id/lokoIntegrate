@@ -66,17 +66,34 @@ class AuthService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login gagal');
+        let errorMessage = 'Login gagal';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          // If parsing error response fails, use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+
+      // Validate response structure
+      if (!data.token) {
+        throw new Error('Token tidak ditemukan dalam response');
+      }
+
+      if (!data.user) {
+        throw new Error('Data user tidak ditemukan dalam response');
+      }
+
       return data;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Terjadi kesalahan saat login');
+      throw new Error('Terjadi kesalahan saat login. Silakan periksa koneksi internet Anda.');
     }
   }
 
@@ -89,7 +106,7 @@ class AuthService {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
-        throw new Error('Token tidak ditemukan');
+        throw new Error('Token tidak ditemukan. Silakan login kembali.');
       }
 
       const response = await fetch(`${this.baseURL}/token-validation`, {
@@ -101,6 +118,12 @@ class AuthService {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          // Clear invalid token
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_data');
+          throw new Error('Token telah expired. Silakan login kembali.');
+        }
         throw new Error('Token tidak valid');
       }
 
@@ -110,7 +133,7 @@ class AuthService {
       if (error instanceof Error) {
         throw error;
       }
-      throw new Error('Terjadi kesalahan saat validasi token');
+      throw new Error('Terjadi kesalahan saat validasi token. Silakan coba lagi.');
     }
   }
 
